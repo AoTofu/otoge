@@ -9,6 +9,7 @@ import { Loader2 } from 'lucide-react';
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(GameState.Ready);
   const [beatmap, setBeatmap] = useState<Beatmap | null>(null);
+  const [gameDuration, setGameDuration] = useState<number>(0);
   const [score, setScore] = useState<Score>({
     points: 0,
     combo: 0,
@@ -27,8 +28,15 @@ const App: React.FC = () => {
     setError(null);
     try {
       const newBeatmap = await generateBeatmap(prompt);
+      if (newBeatmap.length === 0) {
+        setError('Failed to generate beatmap. The generated map was empty. Please try a different prompt.');
+        setGameState(GameState.Ready);
+        return;
+      }
       // Sort notes by time to ensure proper gameplay
       newBeatmap.sort((a, b) => a.time - b.time);
+      const lastNoteTime = newBeatmap[newBeatmap.length - 1].time;
+      setGameDuration(lastNoteTime);
       setBeatmap(newBeatmap);
       setScore({
         points: 0,
@@ -83,7 +91,7 @@ const App: React.FC = () => {
         );
       case GameState.Playing:
         return beatmap ? (
-          <Game beatmap={beatmap} onGameFinish={handleGameFinish} />
+          <Game beatmap={beatmap} onGameFinish={handleGameFinish} gameDuration={gameDuration} />
         ) : null;
       case GameState.Finished:
         return <ResultsScreen score={score} onRestart={handleRestart} />;

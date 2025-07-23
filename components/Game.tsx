@@ -15,9 +15,10 @@ import { BarChart, Gauge } from 'lucide-react';
 interface GameProps {
   beatmap: Beatmap;
   onGameFinish: (finalScore: Score) => void;
+  gameDuration: number;
 }
 
-const Game: React.FC<GameProps> = ({ beatmap, onGameFinish }) => {
+const Game: React.FC<GameProps> = ({ beatmap, onGameFinish, gameDuration }) => {
   const [startTime, setStartTime] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [notes, setNotes] = useState<NoteType[]>(beatmap);
@@ -123,7 +124,8 @@ const Game: React.FC<GameProps> = ({ beatmap, onGameFinish }) => {
   
   // This separate useEffect handles the finish condition to avoid stale score state in the game loop.
   useEffect(() => {
-    if (currentTime >= GAME_DURATION_MS + 2000) {
+    // Finish the game 2 seconds after the last note has passed the hit line
+    if (currentTime >= gameDuration + 2000) {
        if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
        onGameFinish(score);
     }
