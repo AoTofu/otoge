@@ -1,0 +1,5 @@
+{
+  "name": "Gemini Rhythm Game Generator",
+  "description": "Create a rhythm game beatmap by describing a song, and then play the generated game where notes fall from the top of the screen.",
+  "requestFramePermissions": []
+}
